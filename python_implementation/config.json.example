@@ -1,0 +1,28 @@
+{
+    "desired_distance": 0.5,
+    "min_distance": 0.2,
+    "max_distance": 5.0,
+    "max_forward_speed": 80,
+    "max_turn_speed": 60,
+    "wheel_base": 0.15,
+    "control_loop_rate": 20,
+    "distance_pid": {
+        "Kp": 50.0,
+        "Ki": 1.0,
+        "Kd": 10.0
+    },
+    "angle_pid": {
+        "Kp": 80.0,
+        "Ki": 1.0,
+        "Kd": 15.0
+    },
+    "sensor_type": "simulated",
+    "detection_timeout": 5.0,
+    "camera": {
+        "device_id": 0,
+        "focal_length": 500,
+        "image_width": 640,
+        "image_height": 480,
+        "target_width": 0.1
+    }
+}
