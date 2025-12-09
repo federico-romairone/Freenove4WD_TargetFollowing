@@ -1,0 +1,17 @@
+# Core dependencies for Freenove 4WD Target Following System
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Optional dependencies for hardware implementation
+# Uncomment if using camera-based target detection:
+# opencv-python>=4.8.0
+# numpy>=1.24.0
+
+# Uncomment if using Raspberry Pi GPIO:
+# RPi.GPIO>=0.7.1
+# adafruit-circuitpython-pca9685>=3.4.0
+
+# Uncomment if using serial communication:
+# pyserial>=3.5
