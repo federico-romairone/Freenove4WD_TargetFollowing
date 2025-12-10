@@ -49,7 +49,7 @@ The project includes:
 
 ⚠️ Do **not** run `main.py` directly due to relative imports.
 
-## Correct command:
+Correct command:
 
 ``` bash
 cd Freenove4WD_TargetFollowing

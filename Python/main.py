@@ -1,6 +1,6 @@
 from . import config
 from . import utility
-from .models.Controller import Controller
+from .models.controller import Controller
 
 def startup() -> Controller:
     # set the reference
