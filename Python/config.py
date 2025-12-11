@@ -4,7 +4,7 @@ MAX_REF = 50 # cm
 DEF_REF = 10 # cm
 
 # tuning
-Kp = 0.8
+Kp = 1.2
 
 # speed-duty convertion
 MAX_SPEED = 59.35							# cm/s, from measurements
