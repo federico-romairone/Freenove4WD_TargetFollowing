@@ -30,9 +30,6 @@ py.importlib.import_module('config');
 % Controller transfer function 
 Kp = double(py.config.Kp);
 
-% Convertion ration from speed to PWM
-speed_to_duty_ratio = double(py.config.SPEED_TO_DUTY_RATIO);
-
 %%
 
 % Plotting results for system response simulation
