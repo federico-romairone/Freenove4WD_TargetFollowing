@@ -29,17 +29,41 @@ py.importlib.import_module('config');
 
 % Controller transfer function 
 Kp = double(py.config.Kp);
+Gc = Kp;
+
+% Closed-loop transfer function
+L = minreal(zpk(Gc * Gp));
+S = 1/(1+L);
+T = 1-S;
 
 %%
+
+% Checking internal stability
+figure, bode(L), grid on
+[num, den] = tfdata(L, 'v');
+figure, nyquist1(num, den), grid on
+title('Nyquist diagram for loop function')
+
+% Plotting step response
+max_rise_time = 0.5;
+[stepResponse, stepTime] = step(T);
+figure
+plot(stepTime, stepResponse, 'm'), hold on
+plot(stepTime, 0.9 * ones(size(stepTime)), 'y--')
+plot([max_rise_time max_rise_time], [0 1], 'c--')
+grid on
+title('Closed-loop system step response')
+xlabel('Time')
+legend('Step response', '90% of 1', 'Max rise time')
 
 % Plotting results for system response simulation
 t = out.y.Time';
 r_step = r * ones(1, out.y.Length);
-r_step_90 = r_step * 0.9;
 y = out.y.Data';
 figure
-plot(t, r_step, 'm', t, r_step_90, 'y--', t, y, 'b')
+plot(t, r_step, 'm', t, y, 'b')
 grid on
-title('System response plot')
+title('System response')
 xlabel('Time')
-legend('Reference r(t)', '90% of r(t)', 'Output y(t)')
+legend('Reference r(t)', 'Output y(t)')
+ylim([0 r+0.5])
