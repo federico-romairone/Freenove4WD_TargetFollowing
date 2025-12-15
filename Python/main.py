@@ -11,7 +11,7 @@ def startup() -> Controller:
     else:
         print("Input not valid, reference initialized to default.")
         controller = Controller() # no argument --> set default
-    return controller;
+    return controller
 
 def main() -> int: 
     controller = None
@@ -20,13 +20,13 @@ def main() -> int:
         print("Program started, press ctrl+c to exit.\n")
         controller = startup()
         input("Put the reference in front of the sensor and press enter to start.")
-        controller.follow_target();
+        controller.test()
     
     except KeyboardInterrupt:
         print("\nKeyboard interrupt triggered.")
 
     except Exception as e:
-        print(f"\nUnkown excption triggered: {e}")
+        print(f"\nUnknown excption triggered: {e}")
         import traceback
         traceback.print_exc()
     

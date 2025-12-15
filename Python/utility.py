@@ -1,3 +1,6 @@
+from typing import List
+from . import config
+
 def is_numeric(value) -> bool:
     """
     Checks whether 'value' is a numeric input.
@@ -24,4 +27,10 @@ def suppress_oscillations(prev: float, succ: float, eps: float) -> float:
     if abs(succ-prev) < eps: succ = prev
     return succ
 
-__all__ = ["is_numeric", "saturation"]
+def apply_calibration(duties: List[int]) -> None:
+    for i in range(4):
+        duties[i] = int(duties[i]*config.MOTOR_CALIBRATION_FACTORS[i])
+
+__all__ = ["is_numeric", "saturation", 
+           "suppress_oscillations", 
+           "apply_calibration"]
