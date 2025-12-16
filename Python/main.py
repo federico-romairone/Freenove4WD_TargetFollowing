@@ -20,7 +20,7 @@ def main() -> int:
         print("Program started, press ctrl+c to exit.\n")
         controller = startup()
         input("Put the reference in front of the sensor and press enter to start.")
-        controller.test()
+        controller.follow_target()
     
     except KeyboardInterrupt:
         print("\nKeyboard interrupt triggered.")

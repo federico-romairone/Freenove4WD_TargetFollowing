@@ -43,7 +43,7 @@ class Controller:
             utility.apply_calibration(duties)
             print("Calibration applied!")
         self.car.set_motor_model(duties)
-        time.sleep(3)
+        time.sleep(2.5)
         self.car.set_motor_model([0]*4)
 
     # Distructor
