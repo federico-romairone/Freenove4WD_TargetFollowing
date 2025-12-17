@@ -10,10 +10,10 @@ C = 1;
 D = 0;
 
 % Initial distance from target (cm)
-x0 = 5;
+x0 = 50;
 
 % Reference distance from target (cm)
-r = 10;
+r = 20;
 
 % Plant transfer function
 plant = ss(A, B, C, D);
@@ -36,7 +36,16 @@ L = minreal(zpk(Gc * Gp));
 S = 1/(1+L);
 T = 1-S;
 
-%%
+% Values for saturation
+max_speed = double(py.config.MAX_SPEED);
+max_PWM = double(py.config.MAX_DUTY);
+
+% Conversion factor
+speed_to_pwm = double(py.config.SPEED_TO_DUTY_RATIO);
+pwm_to_speed = 1/speed_to_pwm;
+
+% Run Simulation
+out = sim("model_sim.slx");
 
 % Checking internal stability
 figure, bode(L), grid on
@@ -66,4 +75,3 @@ grid on
 title('System response')
 xlabel('Time')
 legend('Reference r(t)', 'Output y(t)')
-ylim([0 r+0.5])

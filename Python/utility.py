@@ -11,12 +11,12 @@ def is_numeric(value) -> bool:
     except (TypeError, ValueError):
         return False
 
-def saturation(value: float, upper: float, lower: float = 0) -> float:
+def saturation(value: float, upper: float) -> float:
     """
     Saturate a value in a specific range [lower, upper].
     """
     saturated = value
-    if saturated < lower: saturated = lower
+    if saturated < -upper: saturated = -upper
     elif saturated > upper: saturated = upper
     return saturated
     
