@@ -4,7 +4,7 @@ MAX_REF = 50 # cm
 DEF_REF = 10 # cm
 
 # tuning
-Kp = 1.8
+Kp = -5
 
 # speed-duty convertion
 MAX_2W = 66.140							        # cm/s, from measurements with 2 wheels working
@@ -20,6 +20,17 @@ LL = 1
 RU = 2
 RL = 3
 
+# saturation
+SATURATE = True
+
+# debugger
+DEBUG = True
+
+# data writer
+FOUT_NAME = "Distance_Speed_PWM_out"
+FOUT_EXT = "csv"
+WRITE_OUT = True
+
 # calibration: adjust based on (!!)MY(!!) machine model
 CALIBRATE = False
 MOTOR_CALIBRATION_FACTORS = [1.0]*4
@@ -33,5 +44,6 @@ __all__ = [
     "Kp", "MAX_SPEED", "MAX_DUTY", "EPS",
     "SPEED_TO_DUTY_RATIO", 
     "LU", "LL", "RU", "RL",
+    "SATURATE", "DEBUG", "FOUT_NAME", "FOUT_EXT", "WRITE_OUT",
     "CALIBRATE", "MOTOR_CALIBRATION_FACTORS"
 ]
