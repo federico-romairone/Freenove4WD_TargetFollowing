@@ -1,7 +1,7 @@
-from .pca9685 import PCA9685
-from .servo import Servo
-from .ultrasonic import Ultrasonic
-from .. import config
+from models.pca9685 import PCA9685
+from models.servo import Servo
+from models.ultrasonic import Ultrasonic
+import config
 from typing import List
 
 class Ordinary_Car:

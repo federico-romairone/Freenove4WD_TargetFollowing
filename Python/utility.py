@@ -1,5 +1,5 @@
 from typing import List
-from . import config
+import config
 import pandas as pd
 
 def is_numeric(value) -> bool:

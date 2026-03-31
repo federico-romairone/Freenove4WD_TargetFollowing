@@ -1,6 +1,6 @@
-from . import config
-from . import utility
-from .models.controller import Controller
+import config
+import utility
+from models.controller import Controller
 
 def startup() -> Controller:
     # set the reference
@@ -26,7 +26,7 @@ def main() -> int:
         print("\nKeyboard interrupt triggered.")
 
     except Exception as e:
-        print(f"\nUnknown excption triggered: {e}")
+        print(f"\nUnknown exception triggered: {e}")
         import traceback
         traceback.print_exc()
     

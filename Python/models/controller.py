@@ -1,6 +1,6 @@
-from .ordinary_car import Ordinary_Car
-from .. import config
-from .. import utility
+from models.ordinary_car import Ordinary_Car
+import config
+import utility
 import time
 import csv
 
