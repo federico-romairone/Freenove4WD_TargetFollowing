@@ -10,18 +10,19 @@ class Controller:
         self.car = Ordinary_Car()
         self.ref = ref
         self.Kp = config.Kp
+        self.filename = None
         self.out_file = None
         self.writer = None
         
         if config.WRITE_OUT:
             # init writer object
-            filename = f"{time.strftime("%Y%m%d_%H%M%S")}_{config.FOUT_NAME}.{config.FOUT_EXT}"
-            self.out_file = open(filename, 'w', newline='') 
+            self.filename = f"{time.strftime('%Y%m%d_%H%M%S')}_{config.FOUT_NAME}.{config.FOUT_EXT}"
+            self.out_file = open(self.filename, 'w', newline='') 
             self.writer = csv.writer(self.out_file)
             # header 
             self.writer.writerow(['Elapsed time (s)','Distance (cm)','Speed (cm/s)','Duty (PWM)'])
             if config.DEBUG:
-                print(f"Ready to write on '{filename}'!")
+                print(f"Ready to write on '{self.filename}'!")
 
     # Main function to follow the target
     def follow_target(self):
@@ -75,6 +76,7 @@ class Controller:
 
     # Distructor
     def close(self):
-        if self.out_file:
-            self.out_file.close()
+        if config.WRITE_OUT:
+            utility.post_processing(self.filename)
+            if self.out_file: self.out_file.close()
         self.car.close()
