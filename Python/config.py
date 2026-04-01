@@ -39,11 +39,15 @@ MOTOR_CALIBRATION_FACTORS[LL] = 1.0
 MOTOR_CALIBRATION_FACTORS[RU] = 1.0
 MOTOR_CALIBRATION_FACTORS[RL] = 1.0
 
+# time in seconds for each cycle in control loop based on simulation data (file "20260331_123755_Distance_Speed_PWM_out_postprocessed.xlsx")
+SAMPLING_PERIOD = 0.040;
+
 __all__ = [
     "MIN_REF", "MAX_REF", "DEF_REF", 
     "Kp", "MAX_SPEED", "MAX_DUTY", "EPS",
     "SPEED_TO_DUTY_RATIO", 
     "LU", "LL", "RU", "RL",
     "SATURATE", "DEBUG", "FOUT_NAME", "FOUT_EXT", "WRITE_OUT",
-    "CALIBRATE", "MOTOR_CALIBRATION_FACTORS"
+    "CALIBRATE", "MOTOR_CALIBRATION_FACTORS",
+    "SAMPLING_PERIOD"
 ]

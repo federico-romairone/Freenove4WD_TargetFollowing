@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MF0 version="1.1" packageUris="http://schema.mathworks.com/mf0/SlCache/19700101">
+  <slcache.MasterInformation type="slcache.MasterInformation" uuid="3f84e6ca-78e3-494e-b6d7-5358663f4a35">
+    <entries type="slcache.ReleaseMap" uuid="c6674b89-1826-460f-a915-57bd13fc11dc">
+      <platforms>all</platforms>
+      <release>R2025b</release>
+    </entries>
+    <modelName>model_sim</modelName>
+  </slcache.MasterInformation>
+</MF0>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MF0 version="1.1" packageUris="http://schema.mathworks.com/mf0/SlCache/19700101">
+  <slcache.Information type="slcache.Information" uuid="50cab4c2-e029-4e7a-a0f2-e460cc69f2f8">
+    <entries type="slcache.TargetChecksum" uuid="7ee8cfd6-b4c7-43e4-9774-e86149167357">
+      <checksum>cPOgRRRyIWCIRCoqjyAChbmYUH4OahQGMh8xDNJ2z1C5/yjStq5saiSsIRmzEQmtoPFnKS73nX67Z4c2sKKZAw==</checksum>
+      <mode>VARCACHE</mode>
+    </entries>
+    <modelName>model_sim</modelName>
+    <platform>all</platform>
+    <release>R2025b</release>
+    <slprjVersion>25.2_100</slprjVersion>
+  </slcache.Information>
+</MF0>

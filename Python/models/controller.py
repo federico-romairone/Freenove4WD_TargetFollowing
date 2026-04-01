@@ -20,7 +20,7 @@ class Controller:
             self.out_file = open(self.filename, 'w', newline='') 
             self.writer = csv.writer(self.out_file)
             # header 
-            self.writer.writerow(['Elapsed time (s)','Distance (cm)','Speed (cm/s)','Duty (PWM)'])
+            self.writer.writerow(['Real elapsed time (s)', 'Elapsed time (s)','Distance (cm)','Speed (cm/s)','Duty (PWM)'])
             if config.DEBUG:
                 print(f"Ready to write on '{self.filename}'!")
 
@@ -34,6 +34,7 @@ class Controller:
         
         # simulation start timestamp
         start_time = time.time()
+        last_elapsed = 0
         
         old_dist = self.car.sensor.get_distance()
         while True:
@@ -52,17 +53,23 @@ class Controller:
             # calibrate, if you need to (I needed)
             if config.CALIBRATE:
                 utility.apply_calibration(duties)
+            # getting real elapsed time
+            real_elapsed_time = time.time() - start_time
+            # wait for sampling time
+            delta = (time.time()-start_time)-last_elapsed
+            while (delta < config.SAMPLING_PERIOD):
+                delta = (time.time()-start_time)-last_elapsed
+            elapsed_time = last_elapsed + delta
             # debug
             if config.DEBUG:
-                elapsed_time = time.time() - start_time
-                print(f"Elapsed time = {utility.get_time_format(elapsed_time)} Dist = {dist:5.2f} cm\nSpeed = {speed:5.2f} cm/s\nDuty = {duty:5d} PWM", end="\r")
+                print(f"Real elapsed time = {utility.get_time_format(real_elapsed_time)} Elapsed time = {utility.get_time_format(elapsed_time)} Dist = {dist:5.2f} cm\nSpeed = {speed:5.2f} cm/s\nDuty = {duty:5d} PWM", end="\r")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
-                elapsed_time = time.time() - start_time
-                self.writer.writerow([elapsed_time, dist, speed, duty])
+                self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duty])
                 self.out_file.flush()
             
-            self.car.set_motor_model(duties); 
+            self.car.set_motor_model(duties)
+            last_elapsed = elapsed_time
             old_dist = dist
     
     def test(self):
@@ -76,7 +83,7 @@ class Controller:
 
     # Distructor
     def close(self):
+        self.car.close()
         if config.WRITE_OUT:
             utility.post_processing(self.filename)
             if self.out_file: self.out_file.close()
-        self.car.close()

@@ -34,9 +34,9 @@ def apply_calibration(duties: List[int]) -> None:
 
 def get_time_format(elapsed_time: float) -> str:
     hours = int(elapsed_time // 3600)
-    minutes = int(elapsed_time // 60)
+    minutes = int((elapsed_time % 3600) // 60)
     seconds = elapsed_time % 60
-    return f"{hours}:{minutes}:{seconds:5.2f}"
+    return f"{hours:02d}:{minutes:02d}:{seconds:05.2f}"
 
 def post_processing(input_csv):
     """
@@ -47,12 +47,20 @@ def post_processing(input_csv):
     # Read the CSV file
     df = pd.read_csv(input_csv)
 
-    # Convert 'Elapsed time (s)' to seconds if it's a string
-    if df['Elapsed time (s)'].dtype == 'object':
-        df['Elapsed time (s)'] = pd.to_timedelta(df['Elapsed time (s)']).dt.total_seconds()
+    # Normalize timestamp columns to seconds.
+    # NOTE: `pd.to_timedelta` on numeric-like strings (e.g. "1.23")
+    # interprets them as nanoseconds, not seconds.
+    for col in ['Real elapsed time (s)', 'Elapsed time (s)']:
+        if df[col].dtype == 'object':
+            numeric_seconds = pd.to_numeric(df[col], errors='coerce')
+            if numeric_seconds.notna().all():
+                df[col] = numeric_seconds
+            else:
+                parsed = pd.to_timedelta(df[col], errors='coerce').dt.total_seconds()
+                df[col] = numeric_seconds.fillna(parsed)
 
     # Select and order the relevant columns
-    ordered_columns = ['Elapsed time (s)', 'Distance (cm)', 'Speed (cm/s)', 'Duty (PWM)']
+    ordered_columns = ['Real elapsed time (s)', 'Elapsed time (s)', 'Distance (cm)', 'Speed (cm/s)', 'Duty (PWM)']
     table = df[ordered_columns]
 
     # Save to Excel
@@ -61,12 +69,14 @@ def post_processing(input_csv):
 
     print(f"Post-processed data saved to: {output_file}")
 
-    # Print a preview of the first 10 rows
-    print("\n=== DATA PREVIEW ===")
+    # Print a preview
+    nrows = 10
+    print(f"\n=== DATA PREVIEW (first {nrows} rows) ===")
     print(table.head(10))
 
-__all__ = ["is_numeric", "saturation", 
-           "suppress_oscillations", 
+__all__ = ["is_numeric", "saturation",
+           "suppress_oscillations",
            "apply_calibration",
            "get_time_format",
            "post_processing"]
+
