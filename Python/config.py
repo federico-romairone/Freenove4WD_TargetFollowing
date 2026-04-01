@@ -18,6 +18,9 @@ a = 0.0117;
 b = 0.0284;
 c = 2.6502;
 d = 719.71;
+# duty-speed coefficients convertion function based on logaritmic interpolation of measurements
+a_log = 35.273;
+b_log = -224.57;
 
 # motor indexing
 LU = 0
