@@ -74,6 +74,10 @@ def post_processing(input_csv):
     print(f"\n=== DATA PREVIEW (first {nrows} rows) ===")
     print(table.head(10))
 
+def speed_to_PWM(speed: float) -> int:
+    return int(config.a * pow(speed, 3) + config.b * pow(speed, 2) + config.c * speed + config.d)
+
+
 __all__ = ["is_numeric", "saturation",
            "suppress_oscillations",
            "apply_calibration",

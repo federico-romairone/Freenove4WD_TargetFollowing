@@ -38,6 +38,9 @@ class Controller:
         
         old_dist = self.car.sensor.get_distance()
         while True:
+
+            ## SAMPLING AND ELABORATION
+
             dist = self.car.sensor.get_distance()
             # prevent small oscillations
             dist = utility.suppress_oscillations(old_dist, dist, config.EPS)
@@ -45,14 +48,17 @@ class Controller:
             # staurate the speed
             if config.SATURATE:
                 speed = utility.saturation(speed, config.MAX_SPEED)
-            duty = int(speed * config.SPEED_TO_DUTY_RATIO)
+            duty = utility.speed_to_PWM(speed)
             # saturate the duty
             if config.SATURATE:
-                duty = int(utility.saturation(duty, config.MAX_DUTY))
+                duty = int(utility.saturation(duty, config.MAX_PWM))
             duties = [duty] * 4
             # calibrate, if you need to (I needed)
             if config.CALIBRATE:
                 utility.apply_calibration(duties)
+
+            ## DEBUG AND OUTPUT
+
             # getting real elapsed time
             real_elapsed_time = time.time() - start_time
             # wait for sampling time
@@ -73,7 +79,7 @@ class Controller:
             old_dist = dist
     
     def test(self):
-        duties = [config.MAX_DUTY]*4
+        duties = [config.MAX_PWM]*4
         if config.CALIBRATE:
             utility.apply_calibration(duties)
             print("Calibration applied!")

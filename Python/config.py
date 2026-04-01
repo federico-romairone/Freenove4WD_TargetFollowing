@@ -6,13 +6,18 @@ DEF_REF = 10 # cm
 # tuning
 Kp = -5
 
-# speed-duty convertion
-MAX_2W = 66.140							        # cm/s, from measurements with 2 wheels working
-#MAX_4W = 						    	        # cm/s, from measurements with 4 wheels working
-MAX_SPEED = MAX_2W                              # in other parts of the code, I'll use only this max speed variable
-MAX_DUTY = 4095				 				    # PWM, from manual
-EPS = 1.5 									    # cm, useful to avoid oscillations
-SPEED_TO_DUTY_RATIO = MAX_DUTY/MAX_SPEED     	# convertion ratio
+# upper limit parameters
+MAX_SPEED = 66.14
+MAX_PWM = 4095
+
+# error for oscillations
+EPS = 1.5
+
+# speed-duty coefficients convertion function based on cubic interpolation of measurements
+a = 0.0117;
+b = 0.0284;
+c = 2.6502;
+d = 719.71;
 
 # motor indexing
 LU = 0
@@ -44,8 +49,8 @@ SAMPLING_PERIOD = 0.040;
 
 __all__ = [
     "MIN_REF", "MAX_REF", "DEF_REF", 
-    "Kp", "MAX_SPEED", "MAX_DUTY", "EPS",
-    "SPEED_TO_DUTY_RATIO", 
+    "Kp", "MAX_SPEED", "MAX_PWM", "EPS",
+    "a", "b", "c", "d",
     "LU", "LL", "RU", "RL",
     "SATURATE", "DEBUG", "FOUT_NAME", "FOUT_EXT", "WRITE_OUT",
     "CALIBRATE", "MOTOR_CALIBRATION_FACTORS",
