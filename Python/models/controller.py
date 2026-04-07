@@ -68,7 +68,7 @@ class Controller:
             elapsed_time = last_elapsed + delta
             # debug
             if config.DEBUG:
-                print(f"Real elapsed time = {utility.get_time_format(real_elapsed_time)} Elapsed time = {utility.get_time_format(elapsed_time)} Dist = {dist:5.2f} cm\nSpeed = {speed:5.2f} cm/s\nDuty = {duty:5d} PWM", end="\r")
+                print(f"Elapsed time = {utility.get_time_format(elapsed_time)} Dist = {dist:5.2f} cm Speed = {speed:5.2f} cm/s Duty = {duty:5d} PWM")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
                 self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duty])
@@ -79,12 +79,12 @@ class Controller:
             old_dist = dist
     
     def test(self):
-        duties = [config.MAX_PWM]*4
+        duties = [720]*4
         if config.CALIBRATE:
             utility.apply_calibration(duties)
             print("Calibration applied!")
         self.car.set_motor_model(duties)
-        time.sleep(2.5)
+        time.sleep(7)
         self.car.set_motor_model([0]*4)
 
     # Distructor

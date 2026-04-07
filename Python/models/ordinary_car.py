@@ -22,10 +22,10 @@ class Ordinary_Car:
         if len(duties) != 4:
             raise ValueError("PWM values must be exacly four: one for each wheel.");
         for i in range(4):
-            if duties[i] > config.MAX_DUTY:
-                duties[i] = config.MAX_DUTY
-            elif duties[i] < -config.MAX_DUTY:
-                duties[i] = -config.MAX_DUTY
+            if duties[i] > config.MAX_PWM:
+                duties[i] = config.MAX_PWM
+            elif duties[i] < -config.MAX_PWM:
+                duties[i] = -config.MAX_PWM
     
     # L-U wheel engine
     def left_upper_wheel(self,duty):
@@ -88,4 +88,3 @@ class Ordinary_Car:
     def close(self):
         self.set_motor_model([0]*4)
         self.pwm.close()
-

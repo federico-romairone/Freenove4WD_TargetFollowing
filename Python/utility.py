@@ -75,7 +75,16 @@ def post_processing(input_csv):
     print(table.head(10))
 
 def speed_to_PWM(speed: float) -> int:
-    return int(config.a * pow(speed, 3) + config.b * pow(speed, 2) + config.c * speed + config.d)
+    """
+    Obtained through Excel interpolation for a set of measurments. Computes
+    the pwm input for the robot from the output given by the controller.
+    """
+    [a, b, c, d] = config.direct_conv_fun_coeff;
+    if speed != 0: sign = int(speed / abs(speed))
+    else: sign = 0
+    abs_speed = abs(speed)
+    abs_pwm = int(a * pow(abs_speed, 3) + b * pow(abs_speed, 2) + c * abs_speed + d)
+    return sign * abs_pwm;
 
 
 __all__ = ["is_numeric", "saturation",
@@ -83,4 +92,3 @@ __all__ = ["is_numeric", "saturation",
            "apply_calibration",
            "get_time_format",
            "post_processing"]
-

@@ -46,13 +46,9 @@ max_speed = double(py.config.MAX_SPEED);
 max_PWM = double(py.config.MAX_PWM);
 
 % convertion speed to pwm cubic function coefficients
-a = double(py.config.a);
-b = double(py.config.b);
-c = double(py.config.c);
-d = double(py.config.d);
-% convertion pwm to speed logaritmic function coefficients
-a_log = double(py.config.a_log);
-b_log = double(py.config.b_log);
+dir_coeff = double(py.config.direct_conv_fun_coeff);
+% convertion pwm to speed cubic function coefficients
+inv_coeff = double(py.config.inverse_conv_fun_coeff);
 
 % Run Simulation
 out = sim("model_sim.slx");
