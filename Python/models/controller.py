@@ -31,53 +31,114 @@ class Controller:
         follow a target, mantaining a specific reference distance.
         """
         print("Following the target...")
-        
-        # simulation start timestamp
         start_time = time.time()
         last_elapsed = 0
-        
+        bypass_suppression = False
+
+        # FSM for burst zone
+        IDLE = 0                # no burst is occurring, controller ready for evaluation
+        BURST_ON = 1            # pulse is active, motors are receiving a low input 
+        BURST_OFF = 2           # pulse is ended, motors are stopped, new evaluation in the next cycle
+        burst_state = IDLE
+        burst_timer = 0.0
+
         old_dist = self.car.sensor.get_distance()
+        duties = [0]*4
+
         while True:
 
-            ## SAMPLING AND ELABORATION
+            loop_start_time = time.time()
+            
+            ## SAMPLINGg
 
             dist = self.car.sensor.get_distance()
-            # prevent small oscillations
-            dist = utility.suppress_oscillations(old_dist, dist, config.EPS)
-            speed = (self.ref-dist) * self.Kp
-            # staurate the speed
-            if config.SATURATE:
-                speed = utility.saturation(speed, config.MAX_SPEED)
-            duty = utility.speed_to_PWM(speed)
-            # saturate the duty
-            if config.SATURATE:
-                duty = int(utility.saturation(duty, config.MAX_PWM))
-            duties = [duty] * 4
-            # calibrate, if you need to (I needed)
-            if config.CALIBRATE:
-                utility.apply_calibration(duties)
+            dist = utility.suppress_oscillations(old_dist, dist, config.EPS, bypass_suppression)
+            bypass_suppression = False
+            error = self.ref - dist
+
+            ## CONTROL LOGIC
+
+            # DEAD ZONE -> not move
+
+            if abs(error) < config.CONTROLLER_DEAD_BAND:
+                burst_state = IDLE
+                duties = [0] * 4
+
+            # BURST ZONE -> pulse move
+
+            elif abs(error) < config.BURST_ZONE:
+
+                # current state evaluation
+                
+                if burst_state == IDLE:
+                    # start pulse
+                    sign = 1 if error * self.Kp > 0 else -1  # evaluation of e(t)*Kp for corrispondance with the proportional control logic
+                    duty = sign * config.BURST_PWM
+                    duties = [duty]*4
+                    if config.CALIBRATE:
+                        utility.apply_calibration(duties)
+                    burst_state = BURST_ON
+                    burst_timer = loop_start_time
+                
+                elif burst_state == BURST_ON:
+                    # pulse ended -> stop and start pause
+                    if (time.time()-burst_timer) >= config.BURST_DURATION:
+                        duties = [0]*4
+                        burst_state = BURST_OFF
+                        burst_timer = loop_start_time
+                        bypass_suppression = True
+                
+                elif burst_state == BURST_OFF:
+                    # pulse was ended in the previous cycle -> stop and wait for evaluation
+                    duties = [0]*4
+                    if (loop_start_time-burst_timer) >= config.BURST_PAUSE:
+                        burst_state = IDLE
+            
+            # PROPORTIONAL ZONE
+
+            else:
+
+                # evaluation state
+                burst_state = IDLE                
+                # prop control loop logic
+                speed = error * self.Kp
+                if config.SATURATE:
+                    speed = utility.saturation(speed, config.MAX_SPEED)
+                duty = utility.speed_to_PWM(speed)
+                duty = utility.dead_zone_corrector(duty)
+                if config.SATURATE:
+                    duty = int(utility.saturation(duty, config.MAX_PWM))
+                duties = [duty]*4
+                if config.CALIBRATE:
+                    utility.apply_calibration(duties)
 
             ## DEBUG AND OUTPUT
 
-            # getting real elapsed time
             real_elapsed_time = time.time() - start_time
-            # wait for sampling time
-            delta = (time.time()-start_time)-last_elapsed
-            while (delta < config.SAMPLING_PERIOD):
-                delta = (time.time()-start_time)-last_elapsed
+            delta = real_elapsed_time - last_elapsed
+            while delta < config.SAMPLING_PERIOD:
+                delta = (time.time() - start_time) - last_elapsed
             elapsed_time = last_elapsed + delta
-            # debug
             if config.DEBUG:
-                print(f"Elapsed time = {utility.get_time_format(elapsed_time)} Dist = {dist:5.2f} cm Speed = {speed:5.2f} cm/s Duty = {duty:5d} PWM")
+                if abs(error) < config.CONTROLLER_DEAD_BAND:
+                    zone = "DEAD"
+                    state_str = ""
+                elif abs(error) < config.BURST_ZONE:
+                    zone = "BURST state="
+                    state_str = ["IDLE", "ON", "OFF"][burst_state]
+                else:
+                    zone = "PROPORTIONAL"
+                    state_str = ""
+                print(f"[{zone}{state_str}] t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
-                self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duty])
+                self.writer.writerow([real_elapsed_time, elapsed_time, dist, error * self.Kp, duties[0]])
                 self.out_file.flush()
             
             self.car.set_motor_model(duties)
             last_elapsed = elapsed_time
             old_dist = dist
-    
+        
     def test(self):
         duties = [720]*4
         if config.CALIBRATE:

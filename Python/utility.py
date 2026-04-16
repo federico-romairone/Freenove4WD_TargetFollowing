@@ -21,11 +21,12 @@ def saturation(value: float, upper: float) -> float:
     elif saturated > upper: saturated = upper
     return saturated
     
-def suppress_oscillations(prev: float, succ: float, eps: float) -> float:
+def suppress_oscillations(prev: float, succ: float, eps: float, force: bool = False) -> float:
     """
     If the current value is quite the same as the previous one, this function make it exactly as the previous one.
+    If force is True,  bypass the filter
     """
-    if abs(succ-prev) < eps: succ = prev
+    if not force and abs(succ-prev) < eps: succ = prev
     return succ
 
 def apply_calibration(duties: List[int]) -> None:
@@ -86,9 +87,24 @@ def speed_to_PWM(speed: float) -> int:
     abs_pwm = int(a * pow(abs_speed, 3) + b * pow(abs_speed, 2) + c * abs_speed + d)
     return sign * abs_pwm;
 
+def dead_zone_corrector(pwm: int) -> int:
+    """
+    A discontinuity offset at zero models coulomb friction. 
+    Linear gain models viscous friction.
+    y = sign(x) * (Gain * abs(x) + Offset)
+    """ 
+    if pwm != 0: sign = pwm/abs(pwm)
+    else: sign = 1
+    # from simulink simulation
+    gain = 1
+    offset = config.DEAD_ZONE
+    return int(sign * (gain * abs(pwm) + offset))
 
 __all__ = ["is_numeric", "saturation",
            "suppress_oscillations",
            "apply_calibration",
            "get_time_format",
-           "post_processing"]
+           "post_processing",
+           "speed_to_PWM",
+           "PWM_to_speed",
+           "dead_zone_corrector"]

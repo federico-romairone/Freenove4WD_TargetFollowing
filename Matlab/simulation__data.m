@@ -24,16 +24,16 @@ pulse_zero = pulse_min;
 plant = ss(A, B, C, D);
 Gp = tf(plant);
 
-% Settings to import contants from config.py
-%   Building the file path from the current directory
+% Settings to import constants from config.py
 targetFolder = fullfile(pwd, '..', 'Python');
-% Adding the folder to Python path
 insert(py.sys.path, int32(0), targetFolder)
-% import config.py module
-py.importlib.import_module('config');
 
-% Controller transfer function 
-Kp = double(py.config.Kp);
+% Force reload to ensure all attributes are visible
+mod = py.importlib.import_module('config');
+mod = py.importlib.reload(mod);  % <-- riassegna mod con il risultato del reload
+
+% Controller transfer function
+Kp = double(mod.Kp);
 Gc = Kp;
 
 % Closed-loop transfer function
@@ -42,13 +42,17 @@ S = 1/(1+L);
 T = 1-S;
 
 % Values for saturation
-max_speed = double(py.config.MAX_SPEED);
-max_PWM = double(py.config.MAX_PWM);
+max_speed = double(mod.MAX_SPEED);
+max_PWM   = double(mod.MAX_PWM);
 
-% convertion speed to pwm cubic function coefficients
-dir_coeff = double(py.config.direct_conv_fun_coeff);
-% convertion pwm to speed cubic function coefficients
-inv_coeff = double(py.config.inverse_conv_fun_coeff);
+% Conversion speed to pwm cubic function coefficients
+dir_coeff = double(mod.direct_conv_fun_coeff);
+% Conversion pwm to speed cubic function coefficients
+inv_coeff = double(mod.inverse_conv_fun_coeff);
+
+% Deadzone
+balance_deadzone = 1;
+dead_zone = double(mod.DEAD_ZONE);
 
 % Run Simulation
 out = sim("model_sim.slx");
