@@ -106,5 +106,4 @@ __all__ = ["is_numeric", "saturation",
            "get_time_format",
            "post_processing",
            "speed_to_PWM",
-           "PWM_to_speed",
            "dead_zone_corrector"]

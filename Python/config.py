@@ -4,7 +4,7 @@ MAX_REF = 50 # cm
 DEF_REF = 10 # cm
 
 # tuning
-Kp = -8
+Kp = -2.7
 
 # upper limit parameters
 MAX_SPEED = 66.14
@@ -26,7 +26,7 @@ DEAD_ZONE = 1
 
 # control zones: can't use only a proportional controller due to uncapability to move at very low PWM input
 CONTROLLER_DEAD_BAND = 1.0          # if greated then abs(error), do not move
-BURST_ZONE = 5.0                    # under this threshold, controller goes in burst mode
+BURST_ZONE = 4.0                    # under this threshold, controller goes in burst mode
 BURST_PWM = 1000                    # minimum effective PWM
 BURST_DURATION = SAMPLING_PERIOD    # pulse duration (from tuning)
 BURST_PAUSE = 0.01                  # pause between pulses (from tuning)
