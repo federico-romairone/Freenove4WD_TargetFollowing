@@ -50,7 +50,7 @@ class Controller:
             # CONTROL LOGIC (from loop-shaping)
 
             # controller            
-            speed = prev_speed + 129.6 * error - 128.9 * prev_error; 
+            speed = -1 * (prev_speed + 129.6 * error - 128.9 * prev_error); 
             if config.SATURATE:
                 speed = utility.saturation(speed, config.MAX_SPEED)
             # plant
@@ -69,7 +69,7 @@ class Controller:
                 delta = (time.time() - start_time) - last_elapsed
             elapsed_time = last_elapsed + delta
             if config.DEBUG:
-                print("t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
+                print(f"t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
                 self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duties[0]])
