@@ -1,6 +1,6 @@
 from typing import List
 import config
-import pandas as pd
+import pandas as pd # type: ignore
 
 def is_numeric(value) -> bool:
     """
@@ -54,11 +54,12 @@ def post_processing(input_csv):
     for col in ['Real elapsed time (s)', 'Elapsed time (s)']:
         if df[col].dtype == 'object':
             numeric_seconds = pd.to_numeric(df[col], errors='coerce')
-            if numeric_seconds.notna().all():
-                df[col] = numeric_seconds
+            numeric_series = pd.Series(numeric_seconds)
+            if numeric_series.notna().all():
+                df[col] = numeric_series
             else:
                 parsed = pd.to_timedelta(df[col], errors='coerce').dt.total_seconds()
-                df[col] = numeric_seconds.fillna(parsed)
+                df[col] = numeric_series.fillna(parsed)
 
     # Select and order the relevant columns
     ordered_columns = ['Real elapsed time (s)', 'Elapsed time (s)', 'Distance (cm)', 'Speed (cm/s)', 'Duty (PWM)']
@@ -87,23 +88,9 @@ def speed_to_PWM(speed: float) -> int:
     abs_pwm = int(a * pow(abs_speed, 3) + b * pow(abs_speed, 2) + c * abs_speed + d)
     return sign * abs_pwm;
 
-def dead_zone_corrector(pwm: int) -> int:
-    """
-    A discontinuity offset at zero models coulomb friction. 
-    Linear gain models viscous friction.
-    y = sign(x) * (Gain * abs(x) + Offset)
-    """ 
-    if pwm != 0: sign = pwm/abs(pwm)
-    else: sign = 1
-    # from simulink simulation
-    gain = 1
-    offset = config.DEAD_ZONE
-    return int(sign * (gain * abs(pwm) + offset))
-
 __all__ = ["is_numeric", "saturation",
            "suppress_oscillations",
            "apply_calibration",
            "get_time_format",
            "post_processing",
-           "speed_to_PWM",
-           "dead_zone_corrector"]
+           "speed_to_PWM"]

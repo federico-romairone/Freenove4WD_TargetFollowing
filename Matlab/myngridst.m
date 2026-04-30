@@ -1,9 +1,7 @@
-% Versione da fornire agli studenti; versione 00 
-
 function [] = myngridst(Tpo,Spo)
 
 status = ishold;
-limit=axis;
+limit = axis;
 if nargin == 1 | nargin == 2
   %hold off
 else
@@ -59,4 +57,5 @@ end
 plot([-180 -180],[-100 100],'b--')
 plot([-360 0],[0 0],'b--')
 
-if (nargin==0) & (~status), hold off, end	    % Return hold to previous status
+% Return hold to previous status
+if (nargin==0) & (~status), hold off, end 

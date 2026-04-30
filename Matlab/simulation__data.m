@@ -1,13 +1,9 @@
-clc, clear, close all
+clear
+close all
+clc
 
 % Laplace variable
 s = tf('s');
-
-% SSR plant matrices
-A = 0;
-B = 1;
-C = -1;
-D = 0;
 
 % Initial distance from target (cm)
 x0 = 50;
@@ -21,8 +17,7 @@ pulse_amplitude = pulse_max-pulse_min;
 pulse_zero = pulse_min;
 
 % Plant transfer function
-plant = ss(A, B, C, D);
-Gp = tf(plant);
+Gp = 1/s;
 
 % Settings to import constants from config.py
 targetFolder = fullfile(pwd, '..', 'Python');
@@ -30,16 +25,16 @@ insert(py.sys.path, int32(0), targetFolder)
 
 % Force reload to ensure all attributes are visible
 mod = py.importlib.import_module('config');
-mod = py.importlib.reload(mod);  % <-- riassegna mod con il risultato del reload
+mod = py.importlib.reload(mod);
 
 % Controller transfer function
-Kp = double(mod.Kp);
-Gc = Kp;
+kc = 10^(28.25/20);
+Gc = kc/s * (1 + s/(1/5))
 
-% Closed-loop transfer function
-L = minreal(zpk(Gc * Gp));
-S = 1/(1+L);
-T = 1-S;
+% Descrete controller
+T_sampling = double(mod.SAMPLING_PERIOD);
+Gc_d = c2d(Gc, T_sampling, 'matched')
+[NG_coeff, DG_coeff] = tfdata(Gc_d, 'v');
 
 % Values for saturation
 max_speed = double(mod.MAX_SPEED);
@@ -50,29 +45,8 @@ dir_coeff = double(mod.direct_conv_fun_coeff);
 % Conversion pwm to speed cubic function coefficients
 inv_coeff = double(mod.inverse_conv_fun_coeff);
 
-% Deadzone
-balance_deadzone = 1;
-dead_zone = double(mod.DEAD_ZONE);
-
 % Run Simulation
 out = sim("model_sim.slx");
-
-% Checking internal stability
-figure, bode(L), grid on
-[num, den] = tfdata(L, 'v');
-figure, nyquist1(num, den), grid on
-title('Nyquist diagram for loop function')
-
-% Plotting step response
-[stepResponse, stepTime] = step(T);
-figure
-plot(stepTime, stepResponse, 'g'), hold on
-plot(stepTime, 0.1 * ones(size(stepTime)), 'r--')
-plot(stepTime, 0.9 * ones(size(stepTime)), 'r--')
-grid on
-title('Closed-loop system step response')
-xlabel('Time')
-legend('Step response', '10', '90%')
 
 % Plotting results for system response simulation
 t = out.output.Time';

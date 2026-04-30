@@ -242,11 +242,17 @@ if nargout==0,
           %*******************************************
 
 
-   set(gca, 'YLimMode', 'auto')
+   % YLimMode/XLimMode not supported on NicholsPlot in modern MATLAB
+   ax = gca;
+   if isa(ax, 'matlab.graphics.axis.Axes')
+       set(ax, 'YLimMode', 'auto');
+   end
    limits = axis;
    % Set axis hold on because next plot command may rescale
-   set(gca, 'YLimMode', 'auto')
-   set(gca, 'XLimMode', 'manual')
+   if isa(ax, 'matlab.graphics.axis.Axes')
+       set(ax, 'YLimMode', 'auto');
+       set(ax, 'XLimMode', 'manual');
+   end
    hold on
    % Make arrows
    for k=1:size(gt,2),
