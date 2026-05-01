@@ -6,9 +6,10 @@ import csv
 
 class Controller:
     # Constructor
-    def __init__(self, ref: float = config.DEF_REF):
+    def __init__(self, ref: float = config.DEF_REF, react: int = config.REACTIVITY):
         self.car = Ordinary_Car()
         self.ref = ref
+        self.react = react
         self.filename = None
         self.out_file = None
         self.writer = None
@@ -38,6 +39,8 @@ class Controller:
         prev_error = self.ref - old_dist
         prev_speed = 0
         duties = [0]*4
+        a = config.a[self.react];
+        b = config.b[self.react];
 
         while True:
             
@@ -50,7 +53,7 @@ class Controller:
             # CONTROL LOGIC (from loop-shaping)
 
             # controller            
-            speed = -1 * (prev_speed + 129.6 * error - 128.9 * prev_error); 
+            speed = -1 * (prev_speed + a * error - b * prev_error); 
             if config.SATURATE:
                 speed = utility.saturation(speed, config.MAX_SPEED)
             # plant

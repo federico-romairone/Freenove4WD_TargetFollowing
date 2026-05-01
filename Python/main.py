@@ -3,14 +3,42 @@ import utility
 from models.controller import Controller
 
 def startup() -> Controller:
+    valid_ref = True
+    valid_react = True
+    ref = float(0)
+    reactivity = int(0)
+    
     # set the reference
     ref = input("Set the target distance: ")
-    if utility.is_numeric(ref) and float(ref) >= config.MIN_REF and float(ref) <= config.MAX_REF:
+    if not utility.is_numeric(ref):
+        valid_ref = False
+    else: 
         ref = float(ref)
-        controller = Controller(ref)
+        if ref < config.MIN_REF or ref > config.MAX_REF:
+            valid_ref = False
+    
+    # set the reactivity of the controller if in tuning mode
+    if config.TUNING:
+        reactivity = input("Set the controller reactivity (from 1 to 12): ")
+        if not utility.is_numeric(reactivity):
+            valid_react = False 
+        else: 
+            reactivity = int(reactivity)
+            if reactivity < config.MIN_REACTIVITY or reactivity > config.MAX_REACTIVITY:
+                valid_react = False
+
+    if valid_ref and (config.TUNING and valid_react):
+        controller = Controller(ref, reactivity) # type: ignore
+    elif valid_ref:
+        print("Invalid reactivity input. Initialized to default.")
+        controller = Controller(ref=ref) # type: ignore
+    elif config.TUNING and valid_react:
+        print("Invalid reference input. Initialized to default.")
+        controller = Controller(react=reactivity) # type: ignore
     else:
-        print("Input not valid, reference initialized to default.")
+        print("Invalid reactivity and reference inputs. Initialized to default.")
         controller = Controller() # no argument --> set default
+    
     return controller
 
 def main() -> int: 

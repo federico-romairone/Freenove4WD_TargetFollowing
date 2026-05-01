@@ -29,7 +29,7 @@ mod = py.importlib.reload(mod);
 
 % Controller transfer function
 kc_ideal = 10^(28.25/20);
-kc = 0.8 * kc_ideal
+kc = 0. * kc_ideal
 Gc = kc/s * (1 + s/(1/5))
 
 % Descrete controller

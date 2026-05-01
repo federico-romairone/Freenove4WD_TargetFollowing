@@ -12,7 +12,8 @@ Gp = 1/s;
 % Reference requirements
 Gc_origin_poles = 1;
 delta = 36.5-8.25;
-kc = 10^(delta/20)
+kc_ideal = 10^(delta/20);
+kc = 0.25 * kc_ideal
 
 % Transient requirements
 s_cap = 0.05;
