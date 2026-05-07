@@ -18,7 +18,7 @@ direct_conv_fun_coeff = [0.0043, 0.001, 20.342, -5.0292]
 inverse_conv_fun_coeff = [-8e-10, -1e-8, 0.0325, 0.1739]
 
 # convertion dead zone (abs(PWM) < 715 --> speed = 0)
-DEAD_ZONE_WIDTH = 715
+DEAD_ZONE_WIDTH = 625
 
 # motor indexing
 LU = 0
