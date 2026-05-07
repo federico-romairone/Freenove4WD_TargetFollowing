@@ -3,6 +3,9 @@ MIN_REF = 0
 MAX_REF = 50 # cm
 DEF_REF = 10 # cm
 
+# tuning
+Kp = -2.7
+
 # upper limit parameter
 MAX_PWM = 4095
 
@@ -19,6 +22,13 @@ inverse_conv_fun_coeff = [-6e-10, 2e-19, 0.0257, 3e-12]
 
 # convertion dead zone (abs(PWM) < 715 --> speed = 0)
 DEAD_ZONE_WIDTH = 715
+
+# control zones: can't use only a proportional controller due to uncapability to move at very low PWM input
+CONTROLLER_DEAD_BAND = 1.0          # if greated then abs(error), do not move
+BURST_ZONE = 4.0                    # under this threshold, controller goes in burst mode
+BURST_PWM = 1000                    # pulse intensity
+BURST_DURATION = SAMPLING_PERIOD    # pulse duration (from tuning)
+BURST_PAUSE = 0.01                  # pause between pulses (from tuning)
 
 # motor indexing
 LU = 0
@@ -45,21 +55,14 @@ MOTOR_CALIBRATION_FACTORS[LL] = 1.0
 MOTOR_CALIBRATION_FACTORS[RU] = 1.0
 MOTOR_CALIBRATION_FACTORS[RL] = 1.0
 
-# reactivity regulation for controller
-MIN_REACTIVITY = 1
-MAX_REACTIVITY = 12
-TUNING = True
-REACTIVITY = 1;
-# u(k) = u(k-1) + a * e(k) - b * e(k)
-a = [32.41, 38.89, 45.38, 51.86, 58.34, 64.82, 71.31, 77.79, 84.27, 90.75, 97.24, 103.7]
-b = [32.22, 38.66, 45.11, 51.55, 57.99, 64.44, 70.88, 77.32, 83.77, 90.21, 96.66, 103.1] 
-
 __all__ = [
-    "MIN_REF", "MAX_REF", "DEF_REF", "MAX_PWM", "EPS",
+    "MIN_REF", "MAX_REF", "DEF_REF", 
+    "Kp", "MAX_PWM", "EPS",
     "direct_conv_fun_coeff", "inverse_conv_fun_coeff",
-    "DEAD_ZONE_WIDTH", "LU", "LL", "RU", "RL",
+    "DEAD_ZONE_WIDTH", "CONTROLLER_DEAD_BAND", 
+    "BURST_ZONE", "BURST_PWM", "BURST_DURATION", "BURST_PAUSE",
+    "LU", "LL", "RU", "RL",
     "SATURATE", "DEBUG", "FOUT_NAME", "FOUT_EXT", "WRITE_OUT",
     "CALIBRATE", "MOTOR_CALIBRATION_FACTORS",
-    "SAMPLING_PERIOD", "MIN_REACTIVITY", "MAX_REACTIVITY", "TUNING", 
-    "REACTIVITY", "a", "b"
+    "SAMPLING_PERIOD"
 ]

@@ -39,8 +39,8 @@ class Controller:
         prev_error = self.ref - old_dist
         prev_speed = 0
         duties = [0]*4
-        a = config.a[self.react];
-        b = config.b[self.react];
+        a = config.a[self.react - 1];
+        b = config.b[self.react - 1];
 
         while True:
             
@@ -54,8 +54,6 @@ class Controller:
 
             # controller            
             speed = -1 * (prev_speed + a * error - b * prev_error); 
-            if config.SATURATE:
-                speed = utility.saturation(speed, config.MAX_SPEED)
             # plant
             duty = utility.speed_to_PWM(speed)
             if config.SATURATE:
@@ -81,6 +79,7 @@ class Controller:
             self.car.set_motor_model(duties)
             last_elapsed = elapsed_time
             old_dist = dist
+            prev_error = error
         
     def test(self):
         duties = [720]*4

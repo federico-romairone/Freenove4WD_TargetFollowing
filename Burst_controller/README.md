@@ -13,10 +13,7 @@ The project includes:
 
 # Directory Structure
 
-    Burst_controller        # Alterative implementation through an FSM controller3
-
     Matlab/
-        loop_shaping.m      # Computations for loop-shaping controller design
         model_sim.slx       # Simulink model for the closed-loop control system
         myngridst.m         # Plot of the forbidden zone in the Nichols plot (loop shaping)
         nyquist1.m          # Nyquist plot for a polynomial transfer function
@@ -37,8 +34,6 @@ The project includes:
             servo.py            # Servo motor control
             ultrasonic.py       # Ultrasonic distance sensor
         utility.py          # Helper functions
-    
-    Controller_project.pdf  # Complete loop-shaping design with theoretical additions
 
 --------------------------------------------------------------------------------------------
 
