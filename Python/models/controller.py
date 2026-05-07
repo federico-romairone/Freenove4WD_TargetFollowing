@@ -82,12 +82,12 @@ class Controller:
             prev_error = error
         
     def test(self):
-        duties = [720]*4
+        duties = [4095]*4
         if config.CALIBRATE:
             utility.apply_calibration(duties)
             print("Calibration applied!")
         self.car.set_motor_model(duties)
-        time.sleep(7)
+        time.sleep(1.7)
         self.car.set_motor_model([0]*4)
 
     # Distructor

@@ -16,9 +16,9 @@ EPS = 0.5
 SAMPLING_PERIOD = 0.030;
 
 # speed-duty coefficients convertion function based on cubic interpolation of measurements + origin
-direct_conv_fun_coeff = [0.0077, -1e-14, 27.628, 9e-12]
+direct_conv_fun_coeff = [0.0043, 0.001, 20.342, -5.0292]
 # duty-speed coefficients convertion function based on cubic interpolation of measurements + origin
-inverse_conv_fun_coeff = [-6e-10, 2e-19, 0.0257, 3e-12]
+inverse_conv_fun_coeff = [-8e-10, -1e-8, 0.0325, 0.1739]
 
 # convertion dead zone (abs(PWM) < 715 --> speed = 0)
 DEAD_ZONE_WIDTH = 715
