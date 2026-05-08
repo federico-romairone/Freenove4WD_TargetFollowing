@@ -9,7 +9,7 @@ s = tf('s');
 x0 = 50;
 
 % Reference distance from target (cm)
-step_0_pulse_1 = 0;
+step_0_pulse_1 = 1;
 step_value = 20;
 pulse_min = 10;
 pulse_max = 20;
@@ -27,16 +27,18 @@ insert(py.sys.path, int32(0), targetFolder)
 mod = py.importlib.import_module('config');
 mod = py.importlib.reload(mod);
 
+% Deadzone for convertion funtion
+dead_zone_width = double(mod.DEAD_ZONE_WIDTH);
+
 % Controller transfer function
-kc_ideal = 10^(28.25/20);
-kc = 0.8 * kc_ideal
-Gc = kc/s * (1 + s/(1/5))
+kc = 5.012;
+Gc = kc/s * (1 + s/0.5)
 
 % Descrete controller
 T_sampling = double(mod.SAMPLING_PERIOD);
 Gc_d = c2d(Gc, T_sampling, 'matched')
 [NG_coeff, DG_coeff] = tfdata(Gc_d, 'v');
-%%
+
 % Values for saturation
 max_speed = double(mod.MAX_SPEED);
 max_PWM   = double(mod.MAX_PWM);

@@ -12,8 +12,8 @@ Gp = 1/s;
 % Reference requirements
 Gc_origin_poles = 1;
 delta = 36.5-8.25;
-kc_ideal = 10^(delta/20);
-kc = 0.25 * kc_ideal
+kc_ideal = 10^(14/20);
+kc = 1 * kc_ideal
 
 % Transient requirements
 s_cap = 0.05;
@@ -25,7 +25,7 @@ Sp_den = sqrt(1 + 8 * damping^2) + 4 * damping^2 - 1;
 Sp = Sp_num / Sp_den
 cf_num = (pi - acos(damping)) * sqrt(sqrt(1 + 4 * damping^4) - 2 * damping^2);
 cf_den = sqrt(1 - damping^2) * tr;
-crossover_freq = cf_num / cf_den
+min_crossover_freq = cf_num / cf_den
 
 % Controller design
 
@@ -40,13 +40,14 @@ myngridst(Tp, Sp), hold on
 nichols(L), hold on
 
 desired_cross_freq = 5;
-norm_freq = 25;
+
+norm_freq = 10;
 z = desired_cross_freq / norm_freq;
-Rz = 1 + s/z;
+Rz = 1 + s/z
 
 Gc = Gc * Rz
 L = minreal(zpk(Gc*Gp*Ga*Gf*Gs), 1e-3);
 nichols(L)
 
 T = minreal(zpk(L/(1+L)));
-figure(4), step(T/(Gf*Gs)), grid on
+figure(4), step(T/(Gf*Gs),5), grid on
