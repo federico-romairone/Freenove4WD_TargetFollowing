@@ -17,7 +17,7 @@ class Controller:
         if config.WRITE_OUT:
             # init writer object
             self.filename = f"{time.strftime('%Y%m%d_%H%M%S')}_{config.FOUT_NAME}.{config.FOUT_EXT}"
-            self.out_file = open(self.filename, 'w', newline='') 
+            self.out_file = open(self.filename, 'w', newline='')
             self.writer = csv.writer(self.out_file)
             # header 
             self.writer.writerow(['Real elapsed time (s)', 'Elapsed time (s)','Distance (cm)','Speed (cm/s)','Duty (PWM)'])
@@ -31,6 +31,10 @@ class Controller:
         follow a target, mantaining a specific reference distance.
         """
         print("Following the target...")
+        if config.DEBUG:
+            print(f"Reference distance: {self.ref} cm")
+            print(f"Controller reactivity: {self.react}")
+            print(f"Sampling period: {config.SAMPLING_PERIOD*1000:.0f} ms")
         
         start_time = time.time()
         last_elapsed = 0
@@ -47,13 +51,18 @@ class Controller:
             # SAMPLING
 
             dist = self.car.sensor.get_distance()
-            dist = utility.suppress_oscillations(old_dist, dist, config.EPS)
+            # dist = utility.suppress_oscillations(old_dist, dist, config.EPS)
             error = self.ref - dist
 
             # CONTROL LOGIC (from loop-shaping)
 
             # controller            
-            speed = -1 * (prev_speed + a * error - b * prev_error); 
+            speed = prev_speed + a * error - b * prev_error
+            if config.SATURATE:
+                speed = int(utility.saturation(speed, config.MAX_SPEED))
+            # For sign explanation, view Simulink model
+            prev_speed = speed
+            speed = -speed
             # plant
             duty = utility.speed_to_PWM(speed)
             if config.SATURATE:
@@ -70,7 +79,8 @@ class Controller:
                 delta = (time.time() - start_time) - last_elapsed
             elapsed_time = last_elapsed + delta
             if config.DEBUG:
-                print(f"t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
+                #print(f"t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
+                print(f"{speed:.2f} = -1 * ({prev_speed:.2f} + {a} * {error:.2f} - {b} * {prev_error:.2f})")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
                 self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duties[0]])
@@ -82,12 +92,12 @@ class Controller:
             prev_error = error
         
     def test(self):
-        duties = [4095]*4
+        duties = [1500]*4
         if config.CALIBRATE:
             utility.apply_calibration(duties)
             print("Calibration applied!")
         self.car.set_motor_model(duties)
-        time.sleep(1.7)
+        time.sleep(10)
         self.car.set_motor_model([0]*4)
 
     # Distructor

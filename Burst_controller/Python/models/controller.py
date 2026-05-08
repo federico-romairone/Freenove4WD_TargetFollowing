@@ -102,6 +102,8 @@ class Controller:
                 burst_state = IDLE                
                 # prop control loop logic
                 speed = error * self.Kp
+                if config.SATURATE:
+                    speed = int(utility.saturation(speed, config.MAX_SPEED))
                 duty = utility.speed_to_PWM(speed)
                 duty = utility.dead_zone_corrector(duty)
                 if config.SATURATE:

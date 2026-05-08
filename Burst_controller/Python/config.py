@@ -8,6 +8,8 @@ Kp = -2.7
 
 # upper limit parameter
 MAX_PWM = 4095
+# MAX_SPEED = 66.14   # 2 wheels
+MAX_SPEED = 80.68   # 4 wheels
 
 # error for oscillations
 EPS = 0.5
@@ -57,7 +59,7 @@ MOTOR_CALIBRATION_FACTORS[RL] = 1.0
 
 __all__ = [
     "MIN_REF", "MAX_REF", "DEF_REF", 
-    "Kp", "MAX_PWM", "EPS",
+    "Kp", "MAX_PWM", "MAX_SPEED", "EPS",
     "direct_conv_fun_coeff", "inverse_conv_fun_coeff",
     "DEAD_ZONE_WIDTH", "CONTROLLER_DEAD_BAND", 
     "BURST_ZONE", "BURST_PWM", "BURST_DURATION", "BURST_PAUSE",
