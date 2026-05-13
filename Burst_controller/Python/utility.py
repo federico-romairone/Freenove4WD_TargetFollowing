@@ -1,6 +1,6 @@
 from typing import List
 import config
-import pandas as pd
+import pandas as pd # type: ignore
 
 def is_numeric(value) -> bool:
     """
@@ -53,15 +53,16 @@ def post_processing(input_csv):
     # interprets them as nanoseconds, not seconds.
     for col in ['Real elapsed time (s)', 'Elapsed time (s)']:
         if df[col].dtype == 'object':
-            numeric_seconds = pd.Series(pd.to_numeric(df[col], errors='coerce'))
-            if numeric_seconds.notna().all():
-                df[col] = numeric_seconds
+            numeric_seconds = pd.to_numeric(df[col], errors='coerce')
+            numeric_series = pd.Series(numeric_seconds)
+            if numeric_series.notna().all():
+                df[col] = numeric_series
             else:
                 parsed = pd.to_timedelta(df[col], errors='coerce').dt.total_seconds()
-                df[col] = numeric_seconds.fillna(parsed)
+                df[col] = numeric_series.fillna(parsed)
 
     # Select and order the relevant columns
-    ordered_columns = ['Real elapsed time (s)', 'Elapsed time (s)', 'Distance (cm)', 'Speed (cm/s)', 'Duty (PWM)']
+    ordered_columns = ['Real elapsed time (s)', 'Elapsed time (s)', 'Distance (cm)', 'Duty (PWM)']
     table = df[ordered_columns]
 
     # Save to Excel

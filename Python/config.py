@@ -19,7 +19,7 @@ direct_conv_fun_coeff = [0.0043, -5e-14, 20.347, 1e-10]
 # duty-speed coefficients convertion function based on cubic interpolation of measurements + origin
 inverse_conv_fun_coeff = [-8e-10, 8e-20, 0.0325, 1e-12]
 
-# convertion dead zone (abs(PWM) < 715 --> speed = 0)
+# convertion dead zone (abs(PWM) < DEAD_ZONE_WIDTH --> speed = 0)
 DEAD_ZONE_WIDTH = 625
 
 # motor indexing

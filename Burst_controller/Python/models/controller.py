@@ -17,7 +17,7 @@ class Controller:
         if config.WRITE_OUT:
             # init writer object
             self.filename = f"{time.strftime('%Y%m%d_%H%M%S')}_{config.FOUT_NAME}.{config.FOUT_EXT}"
-            self.out_file = open(self.filename, 'w', newline='') 
+            self.out_file = open(self.filename, 'w', newline='')
             self.writer = csv.writer(self.out_file)
             # header 
             self.writer.writerow(['Real elapsed time (s)', 'Elapsed time (s)','Distance (cm)','Speed (cm/s)','Duty (PWM)'])
@@ -31,6 +31,10 @@ class Controller:
         follow a target, mantaining a specific reference distance.
         """
         print("Following the target...")
+        if config.DEBUG:
+            print(f"Reference distance: {self.ref} cm")
+            print(f"Sampling period: {config.SAMPLING_PERIOD*1000:.0f} ms")
+            
         start_time = time.time()
         last_elapsed = 0
         bypass_suppression = False
@@ -46,17 +50,15 @@ class Controller:
         duties = [0]*4
 
         while True:
-
-            loop_start_time = time.time()
-            
             # SAMPLING
 
+            loop_start_time = time.time()
             dist = self.car.sensor.get_distance()
             dist = utility.suppress_oscillations(old_dist, dist, config.EPS, bypass_suppression)
             bypass_suppression = False
             error = self.ref - dist
 
-            ## CONTROL LOGIC
+            # CONTROL LOGIC (FSM)
 
             # DEAD ZONE -> not move
 
@@ -132,7 +134,7 @@ class Controller:
                 print(f"[{zone}{state_str}] t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
-                self.writer.writerow([real_elapsed_time, elapsed_time, dist, error * self.Kp, duties[0]])
+                self.writer.writerow([real_elapsed_time, elapsed_time, dist, duties[0]])
                 self.out_file.flush()
             
             self.car.set_motor_model(duties)

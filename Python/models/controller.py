@@ -35,7 +35,7 @@ class Controller:
             print(f"Reference distance: {self.ref} cm")
             print(f"Controller reactivity: {self.react}")
             print(f"Sampling period: {config.SAMPLING_PERIOD*1000:.0f} ms")
-        
+            
         start_time = time.time()
         last_elapsed = 0
 

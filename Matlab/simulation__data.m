@@ -31,8 +31,8 @@ mod = py.importlib.reload(mod);
 dead_zone_width = double(mod.DEAD_ZONE_WIDTH);
 
 % Controller transfer function
-kc = 5.012;
-Gc = kc/s * (1 + s/0.5)
+kc = 7.0795;
+Gc = kc/s * (1 + s/5.882) * ((5.517*s + 3.805)/(0.6897*s + 3.805))
 
 % Descrete controller
 T_sampling = double(mod.SAMPLING_PERIOD);
