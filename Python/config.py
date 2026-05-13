@@ -49,12 +49,15 @@ MOTOR_CALIBRATION_FACTORS[RL] = 1.0
 
 # reactivity regulation for controller
 MIN_REACTIVITY = 1
-MAX_REACTIVITY = 12
+MAX_REACTIVITY = 1
 TUNING = False
 REACTIVITY = 1;
-# u(k) = u(k-1) + a * e(k) - b * e(k)
-a = [10.1]
-b = [9.949] 
+# u(k) = a * e(k) + b * e(k-1) + c * e(k-2) + d * u(k-1) + e * u(k-2)
+a = [9.779]
+b = [-17.78] 
+c = [8.03]
+d = [1.487]
+e = [-0.8475]
 
 __all__ = [
     "MIN_REF", "MAX_REF", "DEF_REF", "MAX_PWM", "MAX_SPEED", 
@@ -62,5 +65,6 @@ __all__ = [
     "DEAD_ZONE_WIDTH", "LU", "LL", "RU", "RL", "SATURATE", 
     "DEBUG", "FOUT_NAME", "FOUT_EXT", "WRITE_OUT", "CALIBRATE", 
     "MOTOR_CALIBRATION_FACTORS", "SAMPLING_PERIOD", 
-    "MIN_REACTIVITY", "MAX_REACTIVITY", "TUNING", "REACTIVITY", "a", "b"
+    "MIN_REACTIVITY", "MAX_REACTIVITY", "TUNING", "REACTIVITY", 
+    "a", "b", "c", "d", "e"
 ]

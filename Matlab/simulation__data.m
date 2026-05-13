@@ -6,11 +6,11 @@ clc
 s = tf('s');
 
 % Initial distance from target (cm)
-x0 = 50;
+x0 = 0;
 
 % Reference distance from target (cm)
-step_0_pulse_1 = 1;
-step_value = 20;
+step_0_pulse_1 = 0;
+step_value = 1;
 pulse_min = 10;
 pulse_max = 20;
 pulse_amplitude = pulse_max-pulse_min;

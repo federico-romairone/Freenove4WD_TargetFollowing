@@ -39,12 +39,17 @@ class Controller:
         start_time = time.time()
         last_elapsed = 0
 
-        old_dist = self.car.sensor.get_distance()
-        prev_error = self.ref - old_dist
-        prev_speed = 0
+        # for speed and error:
+        # element in position i is the one retarded of i samples
+        error = [0.0]*3
+        speed = [0.0]*3
+        
         duties = [0]*4
         a = config.a[self.react - 1];
         b = config.b[self.react - 1];
+        c = config.c[self.react - 1];
+        d = config.d[self.react - 1];
+        e = config.e[self.react - 1];
 
         while True:
             
@@ -52,19 +57,17 @@ class Controller:
 
             dist = self.car.sensor.get_distance()
             # dist = utility.suppress_oscillations(old_dist, dist, config.EPS)
-            error = self.ref - dist
+            error[0] = self.ref - dist
 
             # CONTROL LOGIC (from loop-shaping)
 
             # controller            
-            speed = prev_speed + a * error - b * prev_error
+            speed[0] = -1 * (a * error[0] + b * error[1] + c * error[2] + d * speed[1] + e * speed[2])
             if config.SATURATE:
-                speed = int(utility.saturation(speed, config.MAX_SPEED))
-            # For sign explanation, view Simulink model
-            prev_speed = speed
-            speed = -speed
+                speed[0] = int(utility.saturation(speed[0], config.MAX_SPEED))
+
             # plant
-            duty = utility.speed_to_PWM(speed)
+            duty = utility.speed_to_PWM(speed[0])
             if config.SATURATE:
                 duty = int(utility.saturation(duty, config.MAX_PWM))
             duties = [duty]*4
@@ -80,16 +83,17 @@ class Controller:
             elapsed_time = last_elapsed + delta
             if config.DEBUG:
                 #print(f"t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
-                print(f"{speed:.2f} = -1 * ({prev_speed:.2f} + {a} * {error:.2f} - {b} * {prev_error:.2f})")
+                print(f"{speed[0]:.2f} = -1 * ({a} * {error[0]:.2f} + {b} * {error[1]:.2f} + {c} * {error[2]:.2f} + {d} * {speed[1]:.2f} + {e} * {speed[2]:.2f})")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
-                self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed, duties[0]])
+                self.writer.writerow([real_elapsed_time, elapsed_time, dist, speed[0], duties[0]])
                 self.out_file.flush()
             
             self.car.set_motor_model(duties)
             last_elapsed = elapsed_time
-            old_dist = dist
-            prev_error = error
+            error[1:2] = error[0:1]
+            # For sign explanation, view Simulink model
+            speed[1:2] = [-speed[0], speed[1]]
         
     def test(self):
         duties = [1500]*4
