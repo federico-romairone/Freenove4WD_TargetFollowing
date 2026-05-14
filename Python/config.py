@@ -12,7 +12,7 @@ MAX_SPEED = 80.68   # 4 wheels
 EPS = 0.5
 
 # time in seconds for each cycle in control loop based on simulation data (file "20260331_123755_Distance_Speed_PWM_out_postprocessed.xlsx")
-SAMPLING_PERIOD = 0.030;
+SAMPLING_PERIOD = 0.050;
 
 # speed-duty coefficients convertion function based on cubic interpolation of measurements + origin
 direct_conv_fun_coeff = [0.0043, -5e-14, 20.347, 1e-10]
@@ -49,15 +49,15 @@ MOTOR_CALIBRATION_FACTORS[RL] = 1.0
 
 # reactivity regulation for controller
 MIN_REACTIVITY = 1
-MAX_REACTIVITY = 1
-TUNING = False
-REACTIVITY = 1;
+MAX_REACTIVITY = 6
+TUNING = True
+REACTIVITY = 1
 # u(k) = a * e(k) + b * e(k-1) + c * e(k-2) + d * u(k-1) + e * u(k-2)
-a = [9.779]
-b = [-17.78] 
-c = [8.03]
-d = [1.847]
-e = [-0.8475]
+a = [1.222, 2.445, 3.227, 3.912, 4.89, 9.779]
+b = [-2.222, -4.444, -5.866, -7.111, -8.888, -17.78] 
+c = [1.004, 2.007, 2.65, 3.212, 4.015, 8.03]
+d = 1.847       # same for each Kc
+e = -0.8475     # same for each Kc
 
 __all__ = [
     "MIN_REF", "MAX_REF", "DEF_REF", "MAX_PWM", "MAX_SPEED", 
