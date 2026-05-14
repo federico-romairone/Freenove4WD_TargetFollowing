@@ -6,11 +6,11 @@ clc
 s = tf('s');
 
 % Initial distance from target (cm)
-x0 = 0;
+x0 = 5;
 
 % Reference distance from target (cm)
 step_0_pulse_1 = 0;
-step_value = 1;
+step_value = 20;
 pulse_min = 10;
 pulse_max = 20;
 pulse_amplitude = pulse_max-pulse_min;
@@ -30,8 +30,8 @@ mod = py.importlib.reload(mod);
 % Deadzone for convertion funtion
 dead_zone_width = double(mod.DEAD_ZONE_WIDTH);
 
-% Controller transfer function
-kc = 7.0795;
+% Controller transfer function from loop_shaping.m
+kc = 0.4 * 7.0795;
 Gc = kc/s * (1 + s/5.882) * ((5.517*s + 3.805)/(0.6897*s + 3.805))
 
 % Descrete controller
