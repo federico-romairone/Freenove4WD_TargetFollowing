@@ -86,11 +86,21 @@ def speed_to_PWM(speed: float) -> int:
     else: sign = 0
     abs_speed = abs(speed)
     abs_pwm = int(a * pow(abs_speed, 3) + b * pow(abs_speed, 2) + c * abs_speed + d)
-    return sign * abs_pwm;
+    return sign * abs_pwm
+
+def force_dead_zone(in_val: int, dead_zone_width: int = config.DEAD_ZONE_WIDTH) -> int:
+    """
+    Force a null output value, if the input variable x is in between 
+    -dead_zone_width and +dead_zone_width
+    """
+    out_val = in_val
+    if abs(in_val) <= dead_zone_width: out_val = 0
+    return out_val 
 
 __all__ = ["is_numeric", "saturation",
            "suppress_oscillations",
            "apply_calibration",
            "get_time_format",
            "post_processing",
-           "speed_to_PWM"]
+           "speed_to_PWM",
+           "force_dead_zone"]
