@@ -19,7 +19,7 @@ def startup() -> Controller:
     
     # set the reactivity of the controller if in tuning mode
     if config.TUNING:
-        reactivity = input("Set the controller reactivity (from 1 to 12): ")
+        reactivity = input(f"Set the controller reactivity (from {config.MIN_REACTIVITY} to {config.MAX_REACTIVITY}): ")
         if not utility.is_numeric(reactivity):
             valid_react = False 
         else: 

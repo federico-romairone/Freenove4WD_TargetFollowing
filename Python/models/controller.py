@@ -37,7 +37,7 @@ class Controller:
             print(f"Sampling period: {config.SAMPLING_PERIOD*1000:.0f} ms\n")
             
         start_time = time.time()
-        last_elapsed = 0
+        elapsed_time = 0
 
         # for speed and error:
         # element in position i is the one retarded of i samples
@@ -48,11 +48,19 @@ class Controller:
         a = config.a[self.react - 1];
         b = config.b[self.react - 1];
         c = config.c[self.react - 1];
-        d = config.d[self.react - 1];
-        e = config.e[self.react - 1];
+        d = config.d;
+        e = config.e;
+        if config.DEBUG:
+            print(f"a = {a:.2f}\nb = {b:.2f}\nc = {c:.2f}\nd = {d:.2f}\ne = {e:.2f}\n");
 
         while True:
             
+            # (NOT BUSY) WAITING before sampling
+            real_elapsed_time = time.time() - start_time
+            while (time.time() - start_time) - elapsed_time < config.SAMPLING_PERIOD:
+                pass
+            elapsed_time = time.time() - start_time
+
             # SAMPLING
 
             dist = self.car.sensor.get_distance()
@@ -61,6 +69,10 @@ class Controller:
 
             # CONTROL LOGIC (from loop-shaping)
 
+            if config.DEBUG:
+                print(f"error = [ {error[0]:7.2f}  {error[1]:7.2f}  {error[2]:7.2f} ]") 
+                print(f"speed = [ {'':7}  {speed[1]:7.2f}  {speed[2]:7.2f} ]")
+            
             # controller            
             speed[0] = a * error[0] + b * error[1] + c * error[2] + d * speed[1] + e * speed[2]
             if config.SATURATE:
@@ -69,30 +81,21 @@ class Controller:
             input_speed = -speed[0]
 
             # plant
-            duty = utility.force_dead_zone(in_val=utility.speed_to_PWM(input_speed))
+            duty = utility.force_dead_zone(utility.speed_to_PWM(input_speed), 0)
             if config.SATURATE:
                 duty = int(utility.saturation(duty, config.MAX_PWM))
             duties = [duty]*4
             if config.CALIBRATE:
                 utility.apply_calibration(duties)
 
-            # DEBUG AND OUTPUT
+            # OUTPUT
 
-            real_elapsed_time = time.time() - start_time
-            delta = real_elapsed_time - last_elapsed
-            while delta < config.SAMPLING_PERIOD:
-                delta = (time.time() - start_time) - last_elapsed
-            elapsed_time = last_elapsed + delta
-            if config.DEBUG:
-                #print(f"t={utility.get_time_format(elapsed_time)} dist={dist:5.2f} err={error:+.2f} duty={duties[0]:5d}")
-                print(f"{input_speed:.2f} = -1 * ({a} * {error[0]:.2f} + {b} * {error[1]:.2f} + {c} * {error[2]:.2f} + {d} * {speed[1]:.2f} + {e} * {speed[2]:.2f})")
             # write data on csv output file
             if config.WRITE_OUT and self.writer and self.out_file:
                 self.writer.writerow([real_elapsed_time, elapsed_time, dist, input_speed, duties[0]])
                 self.out_file.flush()
             
             self.car.set_motor_model(duties)
-            last_elapsed = elapsed_time
             error[2] = error[1]
             error[1] = error[0]
             speed[2] = speed[1]
